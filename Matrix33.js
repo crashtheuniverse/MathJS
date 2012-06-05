@@ -27,8 +27,8 @@ MW.Matrix33 = function() {
 	
 	this.setScale = function(sx, sy, sz) {
 		this.m[0] = sx; 
-		this.m[4] = sy; 
-		this.m[8] = sz;
+		this.m[4] = sy || sx;
+		this.m[8] = sz || sx;
 	}
 
 	this.setRotationX = function(alpha) {
@@ -110,7 +110,10 @@ MW.Matrix33 = function() {
 			c[i] = this.m[(i * this.columns) + idx];
 		}
 		
-		return c;
+		var v = new MW.Vector3();
+		v.arraySet(c);
+		
+		return v;
 	}
 	
 	this.setColumn = function(idx, v3Column) {

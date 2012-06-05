@@ -25,9 +25,17 @@ TestSuite = function(name) {
 		document.body.appendChild(txt);
 	}
 
+	this.printHeader = function(str) { 
+		
+		var txt = document.createElement('h2');
+		txt.innerText = str;
+		document.body.appendChild(txt);
+	}
+
 	this.runTests = function() {
 				
-		print("Running suite " + suiteName);			
+		this.printHeader("Running suite " + suiteName);			
+		this.printHeader("------------------------------------");
 		
 		passed = true;
 				
@@ -35,14 +43,14 @@ TestSuite = function(name) {
 		{
 			var local = tests[i].t(); 
 			var txt = local ? "PASS" : "FAIL";
-			this.print("Function:" + tests[i].t.name + " Description:" + tests[i].d + " :" + txt);
+			this.printHeader("Function:" + tests[i].t.name + " Description:" + tests[i].d + " :" + txt);
 			passed = passed & local;
 		}
 		
 		if(passed)
-			print("TEST PASSED");
+			this.printHeader("TEST PASSED");
 		else
-			print("TEST FAILED");
+			this.printHeader("TEST FAILED");
 		
 		return passed;
 	}	
@@ -51,11 +59,128 @@ TestSuite = function(name) {
 function main() { 
 
 	var unit = new TestSuite("Matrix33");
+	unit.addTest("From Axis Angle", testFromAxisAngle);
+	unit.addTest("Get / Set Column", testGetSetColumn);
 	unit.addTest("Matrix Equality", testEquality);
 	unit.addTest("Matrix Transpose", testTranspose);
 	unit.addTest("Matrix Multiplication", testMultiply);
-	unit.addTest("Axis Angle", testAxisAngle);
+	unit.addTest("To Axis Angle", testAxisAngle);
+	unit.addTest("Scalar multiply", testScalarMultiply);
+	unit.addTest("Matrix inversion", testMatrixInverse);
+	unit.addTest("Determinant", testMatrixDet);
 	unit.runTests();
+}
+
+function testFromAxisAngle() { 
+	
+	var m1 = mw.m33(); 
+	var m2 = mw.m33();
+	var axis = mw.v3(); 
+	axis.zero();
+	axis.x = 1.0; 
+	
+	m1.setRotationX(Math.PI * 0.5);
+	m2.fromAngleAxis(Math.PI * 0.5, axis);
+	
+	print(m1);
+	print(m2);
+	
+	if(m1.isEqual(m2))
+		return true;
+		
+	return false;
+}
+
+
+function testGetSetColumn() { 
+	
+	var m = mw.m33();
+	m.setZero(); 
+	m.m[1] = 2.0;
+	m.m[4] = 2.0;
+	m.m[7] = 2.0;
+	
+	var v1 = m.getColumn(1);
+	
+	var v2 = mw.v3();
+	v2.set(2.0);
+	print(v2);
+	
+	var pass = true; 
+	
+	if(v2.isEqual(v1))
+		pass = true;
+	else
+		pass = false;
+		
+	var m2 = mw.m33();
+	m2.setZero();
+	var vNull = mw.v3(); 
+	vNull.set(0.0);
+
+	print(m);
+	
+	m.setColumn(0, vNull);
+	m.setColumn(1, vNull);
+	m.setColumn(2, vNull); 
+	
+	print(m);
+	
+	if(m.isEqual(m2))
+		pass = pass & true;
+	else
+		pass = false;
+
+	return pass; 
+}
+
+function testMatrixDet() { 
+	
+	var m = mw.m33(); 
+	m.fromEulerAnglesXYZ(0.0, 0.0, Math.PI * 0.5);
+	
+	var d = m.getDeterminant(); 
+	
+	if(d === 1.0)
+		return true;
+		
+	return false;	
+}
+
+
+function testMatrixInverse() {
+	
+	var m = mw.m33();
+	m.setRotationX(Math.PI * 0.5);
+	
+	var m2 = mw.m33();
+	m2.setRotationX(-Math.PI * 0.5);
+	m2.inverse(); 
+	
+	print(m); print(m2);
+	
+	if(m2.isEqual(m))
+		return true;
+		
+	return false;		
+}
+
+
+function testScalarMultiply() {
+	
+	var mtx1 = MW.Matrix33.identity();
+	mtx1.scalarMultiply(2.0);
+	
+	var mtx2 = MW.Matrix33.identity();
+	mtx2.setScale(2.0);
+	
+	print(mtx1);
+	print(mtx2);
+	
+	if(mtx1.isEqual(mtx2))
+		return true;
+		
+	return false;
 }
 
 function testMultiply() { 
