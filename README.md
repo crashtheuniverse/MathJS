@@ -25,3 +25,6 @@ What we have so far
 * Vector2D
 * Vector3D
 * Vector4D
+* Matrix33
+* Quaternion
+* TestSuite (used for decorated HTML testing generation)

@@ -10,7 +10,7 @@ MW.Matrix33 = function() {
 	this.rows = 3; 
 	this.columns = 3;
 	this.m = new Array(9);
-	
+
 	this.setZero = function() {
 		for(var i = 0; i < this.m.length; ++i)
 		{
@@ -30,6 +30,42 @@ MW.Matrix33 = function() {
 		this.m[4] = sy; 
 		this.m[8] = sz;
 	}
+
+	this.setRotationX = function(alpha) {
+		
+		this.setZero();
+		var cosAlpha = Math.cos(alpha);
+		var sinAlpha = Math.sin(alpha);
+		this.m[0] = 1.0;
+		this.m[4] = cosAlpha;
+		this.m[5] = -sinAlpha;
+		this.m[7] = sinAlpha;
+		this.m[8] = cosAlpha;
+	}
+	
+	this.setRotationY = function(alpha) { 
+		
+		this.setZero();
+		var cosAlpha = Math.cos(alpha);
+		var sinAlpha = Math.sin(alpha);
+		this.m[0] = cosAlpha;
+		this.m[2] = sinAlpha;
+		this.m[4] = 1.0;
+		this.m[6] = -sinAlpha;
+		this.m[8] = cosAlpha;
+	}
+	
+	this.setRotationZ = function(alpha) {
+		
+		this.setZero();
+		var cosAlpha = Math.cos(alpha);
+		var sinAlpha = Math.sin(alpha);
+		this.m[0] = cosAlpha; 
+		this.m[1] = -sinAlpha;
+		this.m[3] = sinAlpha; 
+		this.m[4] = cosAlpha;
+		this.m[8] = 1.0;
+	}
 	
 	this.getCopy = function() {
 		var mtx = new MW.Matrix33();
@@ -42,7 +78,165 @@ MW.Matrix33 = function() {
 		mtx.transpose();
 		return mtx;
 	}
+
+	this.getInverse = function() { 
+		var mtx= this.getCopy(); 
+		mtx.inverse();
+		return mtx;
+	}
+
+	this.getTrace = function() {
+		var t = this.m[0] + this.m[4] + this.m[8];
+		return t; 
+	}
+
+	this.getDeterminant = function() { 
+		
+		//Use first row to calculate cofactors
+		var cofactor00 = this.m[4] * this.m[8] - this.m[5] * this.m[7];
+		var cofactor01 = this.m[3] * this.m[8] - this.m[5] * this.m[6];
+		var cofactor02 = this.m[3] * this.m[7] - this.m[4] * this.m[6];
+		
+		var det = this.m[0] * cofactor00 - this.m[1] * cofactor01 + this.m[2] * cofactor02;
+		
+		return det;
+	}
+
+	this.getColumn = function(idx) {
+		
+		var c = []; 
+		for(var i = 0; i < this.rows; ++i)
+		{
+			c[i] = this.m[(i * this.columns) + idx];
+		}
+		
+		return c;
+	}
 	
+	this.setColumn = function(idx, v3Column) {
+
+		this.m[0 * this.columns + idx] = v3Column.x;
+		this.m[1 * this.columns + idx] = v3Column.y;
+		this.m[2 * this.columns + idx] = v3Column.z;
+	}
+	
+	this.fromEulerAnglesXYZ = function(pitch, yaw, roll) {
+	
+		this.setRotationX(pitch);
+		
+		var mtx = new MW.Matrix33();
+		mtx.setRotationY(yaw);
+		
+		this.multiply(mtx);
+		
+		mtx.setRotationZ(roll);
+		this.multiply(mtx);
+	}
+	
+	this.fromAngleAxis = function(angle, v3Axis) {
+		
+		var cosAngle = Math.cos(angle);
+		var sinAngle = Math.sin(angle);
+		var oneMinCos = 1.0 - cosAngle;
+
+		var xQuad = v3Axis.x * v3Axis.x; 
+		var yQuad = v3Axis.y * v3Axis.y; 
+		var zQuad = v3Axis.z * v3Axis.z; 
+		
+		var xyOMC = v3Axis.x * v3Axis.y * oneMinCos; 
+		var xzOMC = v3Axis.x * v3Axis.z * oneMinCos; 
+		var yzOMC = v3Axis.y * v3Axis.z * oneMinCos; 
+
+		var xSin = v3Axis.x * sinAngle; 
+		var ySin = v3Axis.y * sinAngle; 
+		var zSin = v3Axis.z * sinAngle;
+
+		this.m[0] = cosAngle + xQuad * oneMinCos;
+		this.m[1] = xyOMC - zSin; 
+		this.m[2] = xzOMC + ySin; 
+		
+		this.m[3] = xyOMC + zSin; 
+		this.m[4] = cosAngle + yQuad * oneMinCos;
+		this.m[5] = yzOMC - xSin;
+
+		this.m[6] = xzOMC - ySin;
+		this.m[7] = yzOMC + xSin; 
+		this.m[8] = cosAngle + zQuad * oneMinCos;
+	}
+
+	this.toAngleAxis = function() {
+		 
+		 var trace = this.getTrace(); 
+		 var cosine = (trace - 1.0) * 0.5;
+		 var radians = Math.acos(cosine);
+		 
+		 var axis = new MW.Vector3();
+		 //Remember radians will be in the range [0, Pi]
+		 
+		 if( radians > 0.0 )
+		 {
+			if( radians < Math.PI )
+			{
+				axis.x = this.m[7] - this.m[5];
+				axis.y = this.m[2] - this.m[6];
+				axis.z = this.m[3] - this.m[1];
+				axis.normalize();
+			}		 	
+		 	else
+		 	{
+		 		var halfInverse;
+		 		if( this.m[0] >= this.m[4] )
+		 		{
+		 			if( this.m[0] >= this.m[8])
+		 			{
+		 				//r00 max diagonal
+		 				axis.x = 0.5 * Math.sqrt(this.m[0] - this.m[4] - this.m[8] + 1.0);
+		 				halfInverse = 0.5 / axis.x;
+		 				axis.y = halfInverse * this.m[1];
+		 				axis.z = halfInverse * this.m[2];
+		 			}
+		 			else
+		 			{
+		 				//r22 max diagonal
+		 				axis.z = 0.5 * Math.sqrt(this.m[8] - this.m[0] - this.m[4] + 1.0);
+		 				halfInverse = 0.5 / axis.z; 
+		 				axis.x = halfInverse * this.m[2];
+		 				axis.y = halfInverse * this.m[5];
+		 			}
+		 			
+		 		}
+		 		else
+		 		{
+		 			if(this.m[4] >= this.m[8])
+		 			{
+		 				//r11 max diagonal
+		 				axis.y = 0.5 * Math.sqrt(this.m[4] - this.m[0] - this.m[8] + 1.0);
+		 				halfInverse = 0.5 / axis.y; 
+		 				axis.x = halfInverse * this.m[1]; 
+		 				axis.z = halfInverse * this.m[5];
+		 			}
+		 			else
+		 			{
+		 				axis.z = 0.5 * Math.sqrt(this.m[8] - this.m[0] - this.m[4] + 1.0);
+		 				halfInverse = 0.5 / axis.z; 
+		 				axis.x = halfInverse * this.m[2];
+		 				axis.y = halfInverse * this.m[5];
+		 			}
+		 		}
+		 	}
+		 }
+		 else
+		 {
+		 	//Zero angle
+		 	axis.x = 1.0;
+		 	axis.y = 0.0;
+		 	axis.z = 0.0;
+		 }
+		 
+		 return {angle: radians, axis: axis};
+	}
+	
+	//Tests
 	this.isEqual = function(mtx) {
 		for(var i = (this.m.length - 1); i >= 0; --i)
 		{
@@ -50,6 +244,33 @@ MW.Matrix33 = function() {
 				return false;
 		}
 		return true;
+	}
+	
+	//Self
+	this.inverse = function() { 
+		
+		var invMtx = new MW.Matrix33();
+		
+		invMtx.m[0] = this.m[4] * this.m[8] - this.m[5] * this.m[7];
+		invMtx.m[1] = - (this.m[3] * this.m[8] - this.m[5] * this.m[6]);
+		invMtx.m[2] = this.m[3] * this.m[7] - this.m[4] * this.m[6];
+		
+		invMtx.m[3] = - (this.m[1] * this.m[8] - this.m[2] * this.m[7]);
+		invMtx.m[4] = this.m[0] * this.m[8] - this.m[2] * this.m[6];
+		invMtx.m[5] = - (this.m[0] * this.m[7] - this.m[1] * this.m[6]);
+		
+		invMtx.m[6] = this.m[1] * this.m[5] - this.m[2] * this.m[4];
+		invMtx.m[7] = - (this.m[0] * this.m[5] - this.m[2] * this.m[3]);
+		invMtx.m[8] = this.m[0] * this.m[4] - this.m[1] * this.m[3];
+		
+		//Now transpose the cofactors matrix
+		invMtx.transpose();
+		
+		var invDet = 1.0 / this.getDeterminant();
+		
+		invMtx.scalarMultiply(invDet);
+		
+		this.copy(invMtx);
 	}
 	
 	this.transpose = function() {
@@ -72,18 +293,33 @@ MW.Matrix33 = function() {
 		}
 	}
 	
-	this.getColumn = function() { 
+	this.scalarMultiply = function(s) { 
+		for(var i = (this.m.length - 1); i >= 0; --i)
+		{
+			this.m[i] = this.m[i] * s;
+		}
 	}
 	
-	this.setColumn = function(idx, v3Column) {
-	}
-	
-	this.fromAngleAxis = function(angle, v3Axis) {
+	this.multiply = function(rMtx) { 
+		
+		var pMtx = new MW.Matrix33();		
+		
+		for(var i = 0; i < this.rows; ++i)
+		{
+			for(var j = 0; j < this.columns; ++j)
+			{
+				var value = this.m[(i * this.columns) + 0] * rMtx.m[(0 * this.rows) + j] +
+							this.m[(i * this.columns) + 1] * rMtx.m[(1 * this.rows) + j] +
+							this.m[(i * this.columns) + 2] * rMtx.m[(2 * this.rows) + j];
+				
+				pMtx.m[(i * this.columns) + j] = value;
+			}	
+		}
+		
+		this.copy(pMtx);
 	}
 
-	this.toAngleAxis = function() { 
-	}
-
+	//Utils
 	this.toString = function() { 
 		var matrixString = "Matrix:\n";
 		matrixString += "" + this.m[0] + " " + this.m[1] + " " + this.m[2] + "\n";

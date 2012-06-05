@@ -2,131 +2,155 @@
  * @author CrashTheuniversE
  */
 
-app = {};
-
-function main() { 
+function print(str) {
 	
-	setup();
-	testVectors();
-	testRender3D();
+	var txt = document.createElement('p');
+	txt.innerText = str;
+	document.body.appendChild(txt);
 }
 
-function setup() { 
+TestSuite = function(name) { 
 	
-	document.addEventListener('mousedown', mouseDown); 
-	document.addEventListener('mouseup', mouseUp);	
-}
-
-function mouseDown()
-{ app.rotate = true; }
-
-function mouseUp()
-{ app.rotate = false; }
-
-function testVectors() {
+	var tests = [];
+	var passed = true;
+	var suiteName = name || "Generic";
 	
-	var v2 = new Vector2;
-	var v3 = new Vector3; 
-}
-
-function testRender3D() { 
-
-    var camera, scene, renderer,
-    geometry, material, mesh;
-
-	var render2D; 
-	
-	app.obj = {x:0, y:0};
-	
-    init();
-    animate();
-
-    function init() {
-
-        scene = new THREE.Scene();
-
-        camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-        camera.position.z = 1000;
-        scene.add( camera );
-
-        geometry = new THREE.CubeGeometry( 200, 200, 200 );
-        material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
-        
-        geometry2 = new THREE.SphereGeometry( 200, 16, 16 );
-        material2 = new THREE.MeshBasicMaterial( { color: 0x00FF00, wireframe: true } );
-
-        mesh = new THREE.Mesh( geometry, material );
-        mesh2 = new THREE.Mesh( geometry2, material2 );
-        scene.add( mesh );
-        scene.add( mesh2 );
-
-        renderer = new THREE.CanvasRenderer();
-        renderer.setSize( window.innerWidth, window.innerHeight );
-		renderer.setClearColor( new THREE.Color( 0x000000 ), 1.0);
-
-		render2D = new THREE.CanvasRenderer(); 
-		render2D.setSize( window.innerWidth, window.innerHeight ); 
-		
-		var divLayer1 = document.createElement('div');
-		divLayer1.width = window.innerWidth; 
-		divLayer1.height = window.innerHeight;
-		divLayer1.style.position = "absolute";
-		divLayer1.top = 0.0; 
-		divLayer1.left = 0.0; 
-		 
-		var divLayer2 = document.createElement('div');
-		divLayer2.width = window.innerWidth; 
-		divLayer2.height = window.innerHeight;
-		divLayer2.style.position = "absolute";
-		divLayer2.top = 0.0; 
-		divLayer2.left = 0.0; 
-
-		divLayer1.appendChild( renderer.domElement ); 
-		divLayer2.appendChild( render2D.domElement );
-
-        document.body.appendChild( divLayer1 );
-		document.body.appendChild( divLayer2 );
-    }
-
-    function animate() {
-
-        // note: three.js includes requestAnimationFrame shim
-        requestAnimationFrame( animate );
-        render();
-        render2DFunc();
-
-    }
-
-	function render2DFunc()
-	{
-		var context = render2D.domElement.getContext("2d");
-		render2D.domElement.width = render2D.domElement.width;
-		context.fillStyle = "rgb(10, 10, 128)"
-		context.globalAlpha = 0.0;
-		context.fillRect(0, 0, window.innerWidth, window.innerHeight);
-		context.globalAlpha = 1.0;
-		context.fillStyle = 'red';
-		context.fillRect(app.obj.x, app.obj.y, 100, 100);
-		
-		if(app.rotate)
-		{
-			app.obj.x += 2.0;
-			app.obj.y += 1.0;
-		}
+	this.addTest = function(desc, test) {
+		tests.push({d: desc, t: test});	
 	}
 	
+	this.print = function(str) {
+		var txt = document.createElement('p');
+		txt.innerText = str;
+		document.body.appendChild(txt);
+	}
 
-    function render() {
-
-        mesh.rotation.x += 0.01;
-        mesh.rotation.y += 0.02;
-
-		if(app.rotate)
+	this.runTests = function() {
+				
+		print("Running suite " + suiteName);			
+		
+		passed = true;
+				
+		for(var i = 0, count = tests.length; i < count; ++i)
 		{
-			mesh2.rotation.x += 0.05;
-			mesh2.position.y += 1.0;			
+			var local = tests[i].t(); 
+			var txt = local ? "PASS" : "FAIL";
+			this.print("Function:" + tests[i].t.name + " Description:" + tests[i].d + " :" + txt);
+			passed = passed & local;
 		}
-        renderer.render( scene, camera );
-
-    }
+		
+		if(passed)
+			print("TEST PASSED");
+		else
+			print("TEST FAILED");
+		
+		return passed;
+	}	
 }
+
+function main() { 
+
+	var unit = new TestSuite("Matrix33");
+	unit.addTest("Matrix Equality", testEquality);
+	unit.addTest("Matrix Transpose", testTranspose);
+	unit.addTest("Matrix Multiplication", testMultiply);
+	unit.addTest("Axis Angle", testAxisAngle);
+	unit.runTests();
+}
+
+function testMultiply() { 
+	
+	var mtx1 = MW.Matrix33.identity(); 
+	var mtx2 = mtx1.getCopy();
+	mtx1.inverse(); 
+
+	var mtxX = MW.Matrix33.identity();
+	mtxX.setRotationX(Math.PI * 0.5);
+	var mtxY = MW.Matrix33.identity();
+	mtxY.setRotationY(Math.PI * 0.5);
+	var mtxZ = MW.Matrix33.identity();
+	mtxZ.setRotationZ(Math.PI * 0.5);
+
+	
+	var mtxXYZ = MW.Matrix33.identity(); 
+	mtxXYZ.fromEulerAnglesXYZ(Math.PI * 0.5, Math.PI * 0.5, Math.PI * 0.5);
+
+	print(mtxX);
+	print(mtxY);
+	print(mtxZ);
+
+	print(mtxXYZ);
+	
+	var mulMatrix = mtxX.getCopy(); 
+	mulMatrix.multiply(mtxY);
+	mulMatrix.multiply(mtxZ);
+			
+	if(mtxXYZ.isEqual(mulMatrix))
+		return true;
+		
+	return false;
+}
+
+function testEquality() { 
+	
+	var mtx = MW.Matrix33.identity(); 
+	var mtx2 = MW.Matrix33.identity(); 
+	
+	if(mtx.isEqual(mtx2)) {
+		return true;
+	}
+		
+	return false;
+}
+
+function testTranspose() { 
+	
+	var mtxId = MW.Matrix33.identity();
+	mtxId.m[1] = 1;
+	print(mtxId);
+	var mtx2 = mtxId.getTranspose();
+	print(mtx2);
+	
+	if(mtxId.isEqual(mtx2.getTranspose())) {
+		return true;
+	}
+	
+	return false;
+}
+
+function testAxisAngle() { 
+	
+	var mtxId = MW.Matrix33.identity();
+	var v3 = new MW.Vector3();
+	
+	v3.x = 1.0;
+	v3.y = 0.0; 
+	v3.z = 0.0; 
+	mtxId.fromAngleAxis(Math.PI * 0.5, v3);
+	
+ 	var mtxX = MW.Matrix33.identity(); 
+ 	mtxX.setRotationX(Math.PI * 0.5);
+ 	
+ 	print(mtxId);
+ 	print(mtxX);
+ 	
+ 	var test = true;
+ 	
+ 	if( mtxId.isEqual(mtxX))
+ 		test = test & true;
+ 	else
+ 		test = false;
+ 	
+ 	var angleAxis = mtxId.toAngleAxis();
+	
+	print("Angle" + angleAxis.angle + " Axis" + angleAxis.axis);
+	
+	if( (angleAxis.angle == Math.PI * 0.5) && angleAxis.axis.isEqual(v3) )
+		test = test & true;
+	else
+		test = false;
+	
+ 	return test;
+}
+
+////////////////////////////////////////////////////////////////////////////////////
