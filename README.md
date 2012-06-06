@@ -34,17 +34,17 @@ Every object is included in the MW namespace.
 
 `var mtx33 = new MW.Matrix33(); `
 
-or you may use a method like: 
+or even shorter:
 
-`var mtx33 = MW.Matrix33.identity(); `
+`var mtx33 = mw.m33()`
 
-Both will give you a new Matrix33 object.
+Both MW and mw are equivalent namespaces
 
 Methods express their will with a prefix, like get or set. Where omitted, 
 the function will modify the current object like in matrix inversion. For example
 
 `
-var mtx33 = new MW.Matrix33();
+var mtx33 = new MW.Matrix33();  
 mtx33.fromEulerAnglesXYZ(0.0, 0.0, Math.PI);
 `
 
