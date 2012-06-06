@@ -20,6 +20,10 @@ MW.Vector4 = function(x, y, z, w) {
 		v.normalize();
 		return v;	
 	}
+
+	this.getArray = function() { 
+		return [this.x, this.y, this.z, this.w];
+	}
 	
 	this.zero = function() { 
 		this.x = 0.0; 
@@ -42,18 +46,17 @@ MW.Vector4 = function(x, y, z, w) {
 
 	this.set = function(x, y, z, w) {
 		this.x = x;
-		this.y = y || x;
-		this.z = z || x;
-		this.w = w || x;
+		this.y = (y === undefined) ? x : y;
+		this.z = (z === undefined) ? x : z;
+		this.w = (w === undefined) ? x : w;
 	}
 
-	this.isEqual = function(v) { 
-		
-		if( (this.x == v.x) && (this.y == v.y) && (this.z == v.z) && (this.w == v.w)) {
-			return true;
-		}
-			
-		return false;
+	this.equal = function(v) { 
+		if( Math.abs(this.x - v.x) > 0.00001 ) return false; 
+		if( Math.abs(this.y - v.y) > 0.00001 ) return false;
+		if( Math.abs(this.z - v.z) > 0.00001 ) return false;
+		if( Math.abs(this.w - v.w) > 0.00001 ) return false;
+		return true;
 	}
 	
 	this.toString = function() { 

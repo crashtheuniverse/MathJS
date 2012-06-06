@@ -240,7 +240,7 @@ MW.Matrix33 = function() {
 	}
 	
 	//Tests
-	this.isEqual = function(mtx) {
+	this.equal = function(mtx) {
 		for(var i = (this.m.length - 1); i >= 0; --i)
 		{
 			if(mtx.m[i] !== this.m[i])
@@ -301,6 +301,19 @@ MW.Matrix33 = function() {
 		{
 			this.m[i] = this.m[i] * s;
 		}
+	}
+	
+	this.vectorMultiply = function(v) { 
+		var _v = []; 
+		
+		for(var i = 0; i < this.rows; ++i)
+		{
+			_v[i] = this.m[(i*this.columns) + 0] * v.x + this.m[(i*this.columns) + 1] * v.y + this.m[(i*this.columns) + 2] * v.z;  
+		}
+		
+		var nv = new MW.Vector3();
+		nv.arraySet(_v);
+		return nv;
 	}
 	
 	this.multiply = function(rMtx) { 

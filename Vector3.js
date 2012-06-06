@@ -20,6 +20,10 @@ MW.Vector3 = function(x, y, z) {
 		return v;	
 	}
 	
+	this.getArray = function() { 
+		return [this.x, this.y, this.z];
+	}
+	
 	this.zero = function() { 
 		this.x = 0.0; 
 		this.y = 0.0; 
@@ -39,17 +43,16 @@ MW.Vector3 = function(x, y, z) {
 
 	this.set = function(x, y, z) {
 		this.x = x;
-		this.y = y || x;
-		this.z = z || x;
+		this.y = (y === undefined) ? x : y;
+		this.z = (z === undefined) ? x : z;
 	}
 
-	this.isEqual = function(v) { 
+	this.equal = function(v) {
 		
-		if( (this.x == v.x) && (this.y == v.y) && (this.z == v.z) ) {
-			return true;
-		}
-			
-		return false;
+		if( Math.abs(this.x - v.x) > 0.00001 ) return false; 
+		if( Math.abs(this.y - v.y) > 0.00001 ) return false;
+		if( Math.abs(this.z - v.z) > 0.00001 ) return false;
+		return true;
 	}
 	
 	this.toString = function() { 

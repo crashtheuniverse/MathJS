@@ -59,6 +59,7 @@ TestSuite = function(name) {
 function main() { 
 
 	var unit = new TestSuite("Matrix33");
+	unit.addTest("Vector Matrix Multiply", testVectorMatrixMul)
 	unit.addTest("From Axis Angle", testFromAxisAngle);
 	unit.addTest("Get / Set Column", testGetSetColumn);
 	unit.addTest("Matrix Equality", testEquality);
@@ -69,6 +70,30 @@ function main() {
 	unit.addTest("Matrix inversion", testMatrixInverse);
 	unit.addTest("Determinant", testMatrixDet);
 	unit.runTests();
+}
+
+function testVectorMatrixMul() {
+	
+	var m = mw.m33();
+	var v = mw.v3();
+	v.set(1.0, 0.0, 0.0);
+	m.setRotationZ(Math.PI * 0.5);
+	
+	var v2 = m.vectorMultiply(v);
+	
+	var vy = mw.v3(); 
+	vy.set(0.0, 1.0, 0.0);
+	
+	print(m);
+	print(v);
+	print(v2);
+	print(vy);
+	
+	if(v2.equal(vy)) {
+		return true;
+	}
+		
+	return false;
 }
 
 function testFromAxisAngle() { 
@@ -84,8 +109,8 @@ function testFromAxisAngle() {
 	
 	print(m1);
 	print(m2);
-	
-	if(m1.isEqual(m2))
+
+	if(m1.equal(m2))
 		return true;
 		
 	return false;
@@ -108,7 +133,7 @@ function testGetSetColumn() {
 	
 	var pass = true; 
 	
-	if(v2.isEqual(v1))
+	if(v2.equal(v1))
 		pass = true;
 	else
 		pass = false;
@@ -126,7 +151,7 @@ function testGetSetColumn() {
 	
 	print(m);
 	
-	if(m.isEqual(m2))
+	if(m.equal(m2))
 		pass = pass & true;
 	else
 		pass = false;
@@ -159,7 +184,7 @@ function testMatrixInverse() {
 	
 	print(m); print(m2);
 	
-	if(m2.isEqual(m))
+	if(m2.equal(m))
 		return true;
 		
 	return false;		
@@ -177,7 +202,7 @@ function testScalarMultiply() {
 	print(mtx1);
 	print(mtx2);
 	
-	if(mtx1.isEqual(mtx2))
+	if(mtx1.equal(mtx2))
 		return true;
 		
 	return false;
@@ -210,7 +235,7 @@ function testMultiply() {
 	mulMatrix.multiply(mtxY);
 	mulMatrix.multiply(mtxZ);
 			
-	if(mtxXYZ.isEqual(mulMatrix))
+	if(mtxXYZ.equal(mulMatrix))
 		return true;
 		
 	return false;
@@ -221,7 +246,7 @@ function testEquality() {
 	var mtx = MW.Matrix33.identity(); 
 	var mtx2 = MW.Matrix33.identity(); 
 	
-	if(mtx.isEqual(mtx2)) {
+	if(mtx.equal(mtx2)) {
 		return true;
 	}
 		
@@ -236,7 +261,7 @@ function testTranspose() {
 	var mtx2 = mtxId.getTranspose();
 	print(mtx2);
 	
-	if(mtxId.isEqual(mtx2.getTranspose())) {
+	if(mtxId.equal(mtx2.getTranspose())) {
 		return true;
 	}
 	
@@ -261,7 +286,7 @@ function testAxisAngle() {
  	
  	var test = true;
  	
- 	if( mtxId.isEqual(mtxX))
+ 	if( mtxId.equal(mtxX))
  		test = test & true;
  	else
  		test = false;
@@ -270,7 +295,7 @@ function testAxisAngle() {
 	
 	print("Angle" + angleAxis.angle + " Axis" + angleAxis.axis);
 	
-	if( (angleAxis.angle == Math.PI * 0.5) && angleAxis.axis.isEqual(v3) )
+	if( (angleAxis.angle == Math.PI * 0.5) && angleAxis.axis.equal(v3) )
 		test = test & true;
 	else
 		test = false;

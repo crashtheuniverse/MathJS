@@ -19,6 +19,10 @@ MW.Vector2 = function(x, y) {
 		return v;	
 	}
 	
+	this.getArray = function() { 
+		return [this.x, this.y];
+	}
+	
 	this.zero = function() { 
 		this.x = 0.0; 
 		this.y = 0.0; 
@@ -36,16 +40,14 @@ MW.Vector2 = function(x, y) {
 
 	this.set = function(x, y) {
 		this.x = x;
-		this.y = y || x;
+		this.y = (y === undefined) ? x : y;
 	}
 
-	this.isEqual = function(v) { 
-		
-		if( (this.x == v.x) && (this.y == v.y) ) {
-			return true;
-		}
-			
-		return false;
+	this.equal = function(v) { 
+	
+		if( Math.abs(this.x - v.x) > 0.00001 ) return false; 
+		if( Math.abs(this.y - v.y) > 0.00001 ) return false;
+		return true;	
 	}
 
 	this.toString = function() { 

@@ -18,3 +18,11 @@ MW.m33 = function() {
 MW.v3 = function() { 
 	return new MW.Vector3();	
 }
+
+MW.v2 = function() {
+	return new MW.Vector2();
+}
+
+MW.v4 = function() {
+	return new MW.Vector4();
+}
