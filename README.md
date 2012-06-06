@@ -28,6 +28,8 @@ How to use it
 
 Simply include the "mathjs.js" file in your projects.
 
+`<script type="text/javascript" src="mathjs.js"></script>`
+
 Every object is included in the MW namespace.
 
 `var mtx33 = new MW.Matrix33(); `
