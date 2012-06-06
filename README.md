@@ -6,7 +6,9 @@ Javascript Math Helper library
 I began writing this library to collect functions I would use in my game development experiments in JS.
 
 There are already good libraries out there for some of the functionality I wanted, but sometimes they 
-are too generic and lack functionality "the way I want it"
+are different from what I expected.
+
+This is also a very good exercise for me to refresh this concepts fromt time to time.
 
 I hope that with feedback and more people using the lib, it will look more and more feature complete. 
 
