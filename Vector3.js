@@ -48,7 +48,6 @@ MW.Vector3 = function(x, y, z) {
 	}
 
 	this.equal = function(v) {
-		
 		if( Math.abs(this.x - v.x) > 0.00001 ) return false; 
 		if( Math.abs(this.y - v.y) > 0.00001 ) return false;
 		if( Math.abs(this.z - v.z) > 0.00001 ) return false;

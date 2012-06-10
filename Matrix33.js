@@ -5,6 +5,11 @@
  * The reference system is Right-Handed
  * Positive angles -> counter clockwise			
  */
+
+/** 
+ * Matrix33
+ */
+
 MW.Matrix33 = function() {
 	
 	this.rows = 3; 
@@ -343,6 +348,10 @@ MW.Matrix33 = function() {
 		matrixString += "" + this.m[6] + " " + this.m[7] + " " + this.m[8] + "\n";
 		return matrixString;
 	}
+}
+
+MW.Matrix33.prototype.aux = function () {
+	return "Auxiliary";
 }
 
 MW.Matrix33.identity = function() {

@@ -2,64 +2,13 @@
  * @author CrashTheuniversE
  */
 
-function print(str) {
-	
-	var txt = document.createElement('p');
-	txt.innerText = str;
-	document.body.appendChild(txt);
-}
-
-TestSuite = function(name) { 
-	
-	var tests = [];
-	var passed = true;
-	var suiteName = name || "Generic";
-	
-	this.addTest = function(desc, test) {
-		tests.push({d: desc, t: test});	
-	}
-	
-	this.print = function(str) {
-		var txt = document.createElement('p');
-		txt.innerText = str;
-		document.body.appendChild(txt);
-	}
-
-	this.printHeader = function(str) { 
-		
-		var txt = document.createElement('h2');
-		txt.innerText = str;
-		document.body.appendChild(txt);
-	}
-
-	this.runTests = function() {
-				
-		this.printHeader("Running suite " + suiteName);			
-		this.printHeader("------------------------------------");
-		
-		passed = true;
-				
-		for(var i = 0, count = tests.length; i < count; ++i)
-		{
-			var local = tests[i].t(); 
-			var txt = local ? "PASS" : "FAIL";
-			this.printHeader("Function:" + tests[i].t.name + " Description:" + tests[i].d + " :" + txt);
-			passed = passed & local;
-		}
-		
-		if(passed)
-			this.printHeader("TEST PASSED");
-		else
-			this.printHeader("TEST FAILED");
-		
-		return passed;
-	}	
-}
+require(["mathjs", "aux"], function(mathjs, aux) {
 
 function main() { 
 
-	var unit = new TestSuite("Matrix33");
-	unit.addTest("Vector Matrix Multiply", testVectorMatrixMul)
+	var unit = new TestSuite("Matrix");
+	unit.addTest("Matrix22", testMatrix22);
+	unit.addTest("Vector Matrix Multiply", testVectorMatrixMul);
 	unit.addTest("From Axis Angle", testFromAxisAngle);
 	unit.addTest("Get / Set Column", testGetSetColumn);
 	unit.addTest("Matrix Equality", testEquality);
@@ -70,6 +19,82 @@ function main() {
 	unit.addTest("Matrix inversion", testMatrixInverse);
 	unit.addTest("Determinant", testMatrixDet);
 	unit.runTests();
+}
+
+
+function testMatrix22() {
+	
+	var pass = true;
+
+	var m2 = mw.m22(); 
+	
+	m2.identity(); 
+	if(m2.determinant() !== 1.0) {
+		pass = false;
+	}
+	
+	m2.zero();
+	if(m2.determinant() !== 0.0) {
+		pass = false;
+	}
+	
+	m2.makeScale(2.0, 2.0);
+	var m2x = mw.m22(); 
+	m2x.identity().scalarMultiply(2.0);
+	
+	if(!(m2.equal(m2x))) {
+		pass = false;
+	}
+	
+	var m_0 = mw.m22().identity(); 
+	var m_1 = mw.m22().zero();
+	 
+	var m_2 = mw.m22().identity().scale(2.0, 2.0);
+	if(!(m_2.trace() === 4.0)) {
+		pass = false;
+	}
+	if(!(m_2.determinant() === 4.0)) {
+		pass = false;
+	}
+
+	var m_3 = mw.m22().copy(m_2);
+	if(!(m_3.equal(m_2))) {
+		pass = false;
+	}
+
+	var m_4 = mw.m22().makeRotation(Math.PI * 0.5);
+	var m_5 = mw.m22().copy(m_4);
+	
+	if(!(m_4.inverse().equal(m_5.transpose()))) {
+		pass = false;
+	}
+	
+	var m_6 = mw.m22().makeScale(2.0, 2.0);
+	var m_7 = mw.m22().identity().scalarMultiply(2.0);
+	
+	if(!(m_6.equal(m_7))) {
+		pass = false;
+	}
+
+	// m_0.identity();
+	// m_0.zero();
+	// m_0.determinant();
+	// m_0.trace(); 
+	// m_0.scale();
+	// m_0.copy();
+	// m_0.transpose();
+	// m_0.inverse();
+	// m_0.equal();
+	// m_0.scalarMultiply();
+	//x// m_0.vectorMultiply(); 
+	// m_0.multiply();
+	// m_0.makeScale(); 
+	// m_0.makeRotation(); 
+	//x// m_0.setColumn();
+	//x// m_0.getColumn(); 
+	// m_0.toString(); 
+	
+	return pass;
 }
 
 function testVectorMatrixMul() {
@@ -304,3 +329,7 @@ function testAxisAngle() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
+
+	main();
+	
+});

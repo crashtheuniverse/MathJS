@@ -60,3 +60,10 @@ var newMtx = mtx33.getInverse();
 Will store a new matrix in newMtx which is the inverse of the mtx33, leaving mtx33 unaltered.
 
 For debugging purposes most of the objects override the .toString() method to report something meaningful.
+
+ToDo
+=======
+
+* Complete matrices implementation
+* Include 2D geometry helpers
+
