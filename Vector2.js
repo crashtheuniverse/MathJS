@@ -1,56 +1,61 @@
 /**
  * @author CrashTheuniversE
  */
-MW.Vector2 = function(x, y) {
+MW.Vector2 = function (x, y) {
 	this.x = x;
 	this.y = y;
+}
 
-	this.getSquaredLength = function() {
+MW.Vector2.prototype = {
+    
+    constructor: MW.Vector2,
+    
+	getSquaredLength: function () {
 		return ( (this.x * this.x) + (this.y * this.y) ); 
-	}
+	},
 
-	this.getLength = function() { 
+	getLength: function () { 
 		return Math.sqrt( this.getSquaredLength());
-	}
+	},
 	
-	this.getNormalized = function() { 
+	getNormalized: function () { 
 		var v = new MW.Vector2(); 
 		v.normalize();
 		return v;	
-	}
+	},
 	
-	this.getArray = function() { 
+	getArray: function () { 
 		return [this.x, this.y];
-	}
+	},
 	
-	this.zero = function() { 
+	zero: function () { 
 		this.x = 0.0; 
 		this.y = 0.0; 
-	}
+	},
 
-	this.normalize = function() {
+	normalize: function () {
 		var invLen = 1.0 / this.getLength();
 		this.x *= invLen;
 		this.y *= invLen; 
-	}
+	},
 
-	this.arraySet = function(a) {
+	arraySet: function (a) {
 		this.x = a[0]; this.y = a[1];
-	}
+	},
 
-	this.set = function(x, y) {
+	set: function(x, y) {
 		this.x = x;
 		this.y = (y === undefined) ? x : y;
-	}
+	},
 
-	this.equal = function(v) { 
-	
+	equal: function (v) { 
 		if( Math.abs(this.x - v.x) > 0.00001 ) return false; 
 		if( Math.abs(this.y - v.y) > 0.00001 ) return false;
-		return true;	
-	}
+		
+        return true;	
+	},
 
-	this.toString = function() { 
+	toString: function () { 
 		return "Vector2 " + " X:" + this.x + " Y:" + this.y;	
 	}
 }
