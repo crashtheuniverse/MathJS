@@ -21,7 +21,6 @@ function main() {
 	unit.runTests();
 }
 
-
 function testMatrix22() {
 	
 	var pass = true;

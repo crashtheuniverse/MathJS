@@ -119,7 +119,7 @@ MW.Matrix33.prototype = {
 		}
 		
 		var v = new MW.Vector3();
-		v.arraySet(c);
+		v.fromArray(c);
 		
 		return v;
 	},
@@ -307,7 +307,7 @@ MW.Matrix33.prototype = {
 		}
 		
 		var nv = new MW.Vector3();
-		nv.arraySet(_v);
+		nv.fromArray(_v);
 		return nv;
 	},
     
