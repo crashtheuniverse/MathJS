@@ -20,6 +20,7 @@ What we have so far
 * Vector4D
 * Matrix22
 * Matrix33
+* Matrix44
 * Quaternion
 * TestSuite (used for decorated HTML testing generation)
 
