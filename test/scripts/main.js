@@ -218,10 +218,10 @@ function testMatrixInverse() {
 
 function testScalarMultiply() {
 	
-	var mtx1 = MW.Matrix33.identity();
+	var mtx1 = MW.m33().identity();
 	mtx1.scalarMultiply(2.0);
 	
-	var mtx2 = MW.Matrix33.identity();
+	var mtx2 = MW.m33().identity();
 	mtx2.setScale(2.0);
 	
 	print(mtx1);
@@ -235,19 +235,18 @@ function testScalarMultiply() {
 
 function testMultiply() { 
 	
-	var mtx1 = MW.Matrix33.identity(); 
+	var mtx1 = MW.m33().identity(); 
 	var mtx2 = mtx1.getCopy();
 	mtx1.inverse(); 
 
-	var mtxX = MW.Matrix33.identity();
+	var mtxX = MW.m33().identity(); 
 	mtxX.setRotationX(Math.PI * 0.5);
-	var mtxY = MW.Matrix33.identity();
+	var mtxY = MW.m33().identity();
 	mtxY.setRotationY(Math.PI * 0.5);
-	var mtxZ = MW.Matrix33.identity();
+	var mtxZ = MW.m33().identity();
 	mtxZ.setRotationZ(Math.PI * 0.5);
-
 	
-	var mtxXYZ = MW.Matrix33.identity(); 
+	var mtxXYZ = MW.m33().identity(); 
 	mtxXYZ.fromEulerAnglesXYZ(Math.PI * 0.5, Math.PI * 0.5, Math.PI * 0.5);
 
 	print(mtxX);
@@ -268,8 +267,8 @@ function testMultiply() {
 
 function testEquality() { 
 	
-	var mtx = MW.Matrix33.identity(); 
-	var mtx2 = MW.Matrix33.identity(); 
+	var mtx = MW.m33().identity(); 
+	var mtx2 = MW.m33().identity(); 
 	
 	if(mtx.equal(mtx2)) {
 		return true;
@@ -280,7 +279,7 @@ function testEquality() {
 
 function testTranspose() { 
 	
-	var mtxId = MW.Matrix33.identity();
+	var mtxId = MW.m33().identity();
 	mtxId.m[1] = 1;
 	print(mtxId);
 	var mtx2 = mtxId.getTranspose();
@@ -295,7 +294,7 @@ function testTranspose() {
 
 function testAxisAngle() { 
 	
-	var mtxId = MW.Matrix33.identity();
+	var mtxId = MW.m33().identity();
 	var v3 = new MW.Vector3();
 	
 	v3.x = 1.0;
@@ -303,7 +302,7 @@ function testAxisAngle() {
 	v3.z = 0.0; 
 	mtxId.fromAngleAxis(Math.PI * 0.5, v3);
 	
- 	var mtxX = MW.Matrix33.identity(); 
+ 	var mtxX = MW.m33().identity(); 
  	mtxX.setRotationX(Math.PI * 0.5);
  	
  	print(mtxId);
