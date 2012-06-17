@@ -18,10 +18,10 @@ What we have so far
 * Vector2D
 * Vector3D
 * Vector4D
+* Matrix22
 * Matrix33
 * Quaternion
 * TestSuite (used for decorated HTML testing generation)
-
 
 How to use it
 =======
@@ -50,16 +50,12 @@ mtx33.fromEulerAnglesXYZ(0.0, 0.0, Math.PI);
 
 Modifies the mtx33 object setting it to a rotation matrix based on the Euler angles for the X,Y,Z axis.
 
-Instead
+In a process to simplify the objects layout, now all the methods modify the current matrix. Also 
+to allow chaining, methods now return this so you can do: 
 
 `
-var mtx33 = MW.Matrix33().Identity();
-var newMtx = mtx33.getInverse();
+var mtx22 = MW.m22().identity().scalarMultiply(x).inverse();
 `
-
-Will store a new matrix in newMtx which is the inverse of the mtx33, leaving mtx33 unaltered.
-
-For debugging purposes most of the objects override the .toString() method to report something meaningful.
 
 ToDo
 =======

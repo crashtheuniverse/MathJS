@@ -7,6 +7,7 @@ require(["mathjs", "aux"], function(mathjs, aux) {
 function main() { 
 
 	var unit = new TestSuite("Matrix");
+	unit.addTest("Long chaining", testChaining);
 	unit.addTest("Matrix22", testMatrix22);
 	unit.addTest("Vector Matrix Multiply", testVectorMatrixMul);
 	unit.addTest("From Axis Angle", testFromAxisAngle);
@@ -19,6 +20,17 @@ function main() {
 	unit.addTest("Matrix inversion", testMatrixInverse);
 	unit.addTest("Determinant", testMatrixDet);
 	unit.runTests();
+}
+
+function testChaining() { 
+	
+	var m = MW.m22().identity().scalarMultiply(2.0).inverse();
+	var mx = MW.m22().identity().makeScale(0.5, 0.5);
+	
+	if(m.equal(mx))
+		return true;
+
+	return false;	
 }
 
 function testMatrix22() {
