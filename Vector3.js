@@ -5,7 +5,7 @@ MW.Vector3 = function(x, y, z) {
 	this.x = x;
 	this.y = y;
 	this.z = z;
-}
+};
 
 MW.Vector3.prototype = {
     

@@ -6,7 +6,7 @@ MW.Vector4 = function (x, y, z, w) {
 	this.y = y;
 	this.z = z;
 	this.w = w;
-}
+};
 
 MW.Vector4.prototype = {
     
@@ -25,16 +25,13 @@ MW.Vector4.prototype = {
 		v.normalize();
 		return v;	
 	},
-
-	getArray: function () { 
-		return [ this.x, this.y, this.z, this.w ];
-	},
 	
 	zero: function () { 
 		this.x = 0.0; 
 		this.y = 0.0; 
 		this.z = 0.0;
-		this.w = 0.0;	
+		this.w = 0.0;
+		return this;	
 	},
 
 	normalize: function () {
@@ -45,8 +42,12 @@ MW.Vector4.prototype = {
 		this.w *= invLen;
 	},
 
-	arraySet: function (a) {
+	fromArray: function (a) {
 		this.x = a[0]; this.y = a[1]; this.z = a[2]; this.w = a[3];
+	},
+
+	toArray: function () { 
+		return [ this.x, this.y, this.z, this.w ];
 	},
 
 	set: function (x, y, z, w) {

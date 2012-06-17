@@ -15,12 +15,16 @@ MW.create = function(o) {
  * Matrix33 helper function
  * @return (Matrix33)
  */
+MW.m22 = function() { 
+	return new MW.Matrix22();	
+}
+
 MW.m33 = function() {
 	return new MW.Matrix33();
 }
 
-MW.m22 = function() { 
-	return new MW.Matrix22();	
+MW.m44 = function() { 
+	return new MW.Matrix44();	
 }
 
 MW.v2 = function() {
@@ -33,4 +37,8 @@ MW.v3 = function() {
 
 MW.v4 = function() {
 	return new MW.Vector4();
+}
+
+MW.q = function() { 
+	return new MW.Quaternion();	
 }

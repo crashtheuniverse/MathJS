@@ -39,12 +39,6 @@ MW.Matrix22.prototype = {
 		return t;
 	},
 
-	scale: function(sx, sy) { 
-		this.m[0] *= sx;
-		this.m[3] *= sy;
-		return this;
-	},
-
 	copy: function(mtx) {
 		for (var i = 0; i < this.m.length; ++i) {
 			this.m[i] = mtx.m[i];

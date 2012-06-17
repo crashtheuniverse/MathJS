@@ -16,7 +16,7 @@ MW.Matrix33.prototype = {
     
     constructor: MW.Matrix33,
     
-    setZero: function () {
+    zero: function () {
         var len = this.m.length;
         for (var i = 0; i < len; ++i) {
             this.m[i] = 0.0;
@@ -24,7 +24,7 @@ MW.Matrix33.prototype = {
 	},
     
     identity: function () { 
-        this.setZero();
+        this.zero();
         
         this.m[0] = 1.0;
         this.m[4] = 1.0;
@@ -32,75 +32,62 @@ MW.Matrix33.prototype = {
         return this;
 	},
     
-    setScale: function (sx, sy, sz) {
+    makeScale: function (sx, sy, sz) {
+    	this.zero();
     	this.m[0] = sx; 
-		this.m[4] = sy || sx;
-		this.m[8] = sz || sx;
+		this.m[4] = sy;
+		this.m[8] = sz;
+		return this;
 	},
     
-    setRotationX: function (alpha) {
+    makeRotationX : function (alpha) {
 		var cosAlpha = Math.cos(alpha);
     	var sinAlpha = Math.sin(alpha);
         
-        this.setZero();
+        this.zero();
 		
 		this.m[0] = 1.0;
 		this.m[4] = cosAlpha;
 		this.m[5] = -(sinAlpha);
 		this.m[7] = sinAlpha;
 		this.m[8] = cosAlpha;
+		return this;
 	},
     
-    setRotationY: function (alpha) { 
+    makeRotationY: function (alpha) { 
     	var cosAlpha = Math.cos(alpha);
     	var sinAlpha = Math.sin(alpha);
         
-		this.setZero();
+		this.zero();
 		
 		this.m[0] = cosAlpha;
 		this.m[2] = sinAlpha;
 		this.m[4] = 1.0;
 		this.m[6] = -(sinAlpha);
 		this.m[8] = cosAlpha;
+		return this;
 	},
     
-    setRotationZ: function (alpha) {
+    makeRotationZ: function (alpha) {
     	var cosAlpha = Math.cos(alpha);
     	var sinAlpha = Math.sin(alpha);
         
-		this.setZero();
+		this.zero();
 		
 		this.m[0] = cosAlpha; 
 		this.m[1] = -sinAlpha;
 		this.m[3] = sinAlpha; 
 		this.m[4] = cosAlpha;
 		this.m[8] = 1.0;
+		return this;
 	},
     
-    getCopy: function () {
-    	var mtx = new MW.Matrix33();
-		mtx.copy(this);
-		return mtx;	 
-	},
-    
-    getTranspose: function () { 
-    	var mtx = this.getCopy();
-		mtx.transpose();
-		return mtx;
-	},
-    
-    getInverse: function () { 
-    	var mtx= this.getCopy(); 
-    	mtx.inverse();
-		return mtx;
-    },
-    
-    getTrace: function () {
+    trace: function () {
 	    var t = this.m[0] + this.m[4] + this.m[8];
 	    return t; 
     },
     
-    getDeterminant: function () { 
+    determinant: function () { 
     	
 		// Use first row to calculate cofactors
 		var cofactor00 = this.m[4] * this.m[8] - this.m[5] * this.m[7];
@@ -128,18 +115,21 @@ MW.Matrix33.prototype = {
     	this.m[0 * this.columns + idx] = v3Column.x;
 		this.m[1 * this.columns + idx] = v3Column.y;
 		this.m[2 * this.columns + idx] = v3Column.z;
+		return this;
 	},
     
     fromEulerAnglesXYZ: function (pitch, yaw, roll) {
-		this.setRotationX(pitch);
+		this.makeRotationX(pitch);
 		
 		var mtx = new MW.Matrix33();
-		mtx.setRotationY(yaw);
+		mtx.makeRotationY(yaw);
 		
 		this.multiply(mtx);
 		
-		mtx.setRotationZ(roll);
+		mtx.makeRotationZ(roll);
 		this.multiply(mtx);
+		
+		return this;
 	},
     
     fromAngleAxis: function (angle, v3Axis) {
@@ -170,11 +160,13 @@ MW.Matrix33.prototype = {
 		this.m[6] = xzOMC - ySin;
 		this.m[7] = yzOMC + xSin; 
 		this.m[8] = cosAngle + zQuad * oneMinCos;
+		
+		return this;
 	},
     
     toAngleAxis: function () {
     	 
-		 var trace = this.getTrace(); 
+		 var trace = this.trace(); 
 		 var cosine = (trace - 1.0) * 0.5;
 		 var radians = Math.acos(cosine);
 		 
@@ -271,10 +263,12 @@ MW.Matrix33.prototype = {
 		//Now transpose the cofactors matrix
 		invMtx.transpose();
 		
-		var invDet = 1.0 / this.getDeterminant();
+		var invDet = 1.0 / this.determinant();
 		invMtx.scalarMultiply(invDet);
 		
 		this.copy(invMtx);
+		
+		return this;
 	},
     
     transpose: function () {
@@ -285,18 +279,24 @@ MW.Matrix33.prototype = {
 				this.m[ (i * this.columns) + j ] = tmp; 
 			}	
 		}
+		
+		return this;
 	},
     
     copy: function (mtx) {
     	for(var i = (this.m.length - 1); i >= 0; --i) {
 			this.m[i] = mtx.m[i];
 		}
+		
+		return this;
 	},
     
     scalarMultiply: function (s) { 
     	for(var i = (this.m.length - 1); i >= 0; --i) {
 			this.m[i] = this.m[i] * s;
 		}
+		
+		return this;
 	},
     
     vectorMultiply: function (v) { 
@@ -325,6 +325,7 @@ MW.Matrix33.prototype = {
 		}
 		
 		this.copy(pMtx);
+		return this;
 	},
     
     toString: function () { 
@@ -332,7 +333,6 @@ MW.Matrix33.prototype = {
 		matrixString += "" + this.m[0] + " " + this.m[1] + " " + this.m[2] + "\n";
 		matrixString += "" + this.m[3] + " " + this.m[4] + " " + this.m[5] + "\n";
 		matrixString += "" + this.m[6] + " " + this.m[7] + " " + this.m[8] + "\n";
-        
 		return matrixString;
 	}
 }

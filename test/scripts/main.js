@@ -7,19 +7,78 @@ require(["mathjs", "aux"], function(mathjs, aux) {
 function main() { 
 
 	var unit = new TestSuite("Matrix");
+	unit.addTest("Matrix4", testMatrix4);
 	unit.addTest("Long chaining", testChaining);
 	unit.addTest("Matrix22", testMatrix22);
 	unit.addTest("Vector Matrix Multiply", testVectorMatrixMul);
 	unit.addTest("From Axis Angle", testFromAxisAngle);
 	unit.addTest("Get / Set Column", testGetSetColumn);
 	unit.addTest("Matrix Equality", testEquality);
-	unit.addTest("Matrix Transpose", testTranspose);
 	unit.addTest("Matrix Multiplication", testMultiply);
 	unit.addTest("To Axis Angle", testAxisAngle);
 	unit.addTest("Scalar multiply", testScalarMultiply);
 	unit.addTest("Matrix inversion", testMatrixInverse);
 	unit.addTest("Determinant", testMatrixDet);
 	unit.runTests();
+}
+
+function testMatrix4() { 
+	
+	var pass = true; 
+	
+	var mi = MW.m44().identity(); 
+	var m0 = MW.m44().zero(); 
+	
+	var m3 = MW.m33().makeRotationX(Math.PI);
+	var m4 = MW.m44().makeRotationX(Math.PI);
+	
+	var s3 = m4.getMatrix33(); 
+	
+	if(!s3.equal(m3))
+		pass = false;
+	
+	var m4n = MW.m44();
+	m4n.copy(m4);
+			
+	m4.inverse(); 
+	s3 = m4.getMatrix33(); 
+	m3.inverse();
+
+	if(!s3.equal(m3))
+		pass = false;
+	 
+	//A * Ainverse = Identity
+	m4n.multiply(m4);
+	if(!m4n.equal(MW.m44().identity()))
+		pass = false;
+	
+	var v = MW.v4().zero(); 
+	v.x = 1.0; 
+	v.w = 1.0;
+	
+	mr = MW.m44().makeRotationZ(Math.PI * 0.5);
+	var vr = mr.vectorMultiply(v);
+	
+	var v2 = MW.v4();
+	v2.set(0.0, 1.0, 0.0, 1.0);
+	
+	if(!vr.equal(v2))
+		pass = false;
+	
+	
+	var mri = MW.m44().fromEulerAnglesXYZ(0.0, Math.PI, 0.0);
+	var mry = MW.m44().makeRotationY(Math.PI);
+	
+	if(!mri.equal(mry))
+		pass = false; 
+		
+	mri.inverse(); 
+	mry.transpose(); 
+	
+	if(!mri.equal(mry))
+		pass = false;
+		
+	return pass;
 }
 
 function testChaining() { 
@@ -60,7 +119,7 @@ function testMatrix22() {
 	var m_0 = mw.m22().identity(); 
 	var m_1 = mw.m22().zero();
 	 
-	var m_2 = mw.m22().identity().scale(2.0, 2.0);
+	var m_2 = mw.m22().makeScale(2.0, 2.0);
 	if(!(m_2.trace() === 4.0)) {
 		pass = false;
 	}
@@ -113,7 +172,7 @@ function testVectorMatrixMul() {
 	var m = mw.m33();
 	var v = mw.v3();
 	v.set(1.0, 0.0, 0.0);
-	m.setRotationZ(Math.PI * 0.5);
+	m.makeRotationZ(Math.PI * 0.5);
 	
 	var v2 = m.vectorMultiply(v);
 	
@@ -140,7 +199,7 @@ function testFromAxisAngle() {
 	axis.zero();
 	axis.x = 1.0; 
 	
-	m1.setRotationX(Math.PI * 0.5);
+	m1.makeRotationX(Math.PI * 0.5);
 	m2.fromAngleAxis(Math.PI * 0.5, axis);
 	
 	print(m1);
@@ -156,7 +215,7 @@ function testFromAxisAngle() {
 function testGetSetColumn() { 
 	
 	var m = mw.m33();
-	m.setZero(); 
+	m.zero(); 
 	m.m[1] = 2.0;
 	m.m[4] = 2.0;
 	m.m[7] = 2.0;
@@ -175,7 +234,7 @@ function testGetSetColumn() {
 		pass = false;
 		
 	var m2 = mw.m33();
-	m2.setZero();
+	m2.zero();
 	var vNull = mw.v3(); 
 	vNull.set(0.0);
 
@@ -197,65 +256,51 @@ function testGetSetColumn() {
 
 function testMatrixDet() { 
 	
-	var m = mw.m33(); 
-	m.fromEulerAnglesXYZ(0.0, 0.0, Math.PI * 0.5);
+	var m = mw.m33().fromEulerAnglesXYZ(0.0, 0.0, Math.PI * 0.5); 
+	if(m.determinant() !== 1.0) {
+		return false;
+	}
 	
-	var d = m.getDeterminant(); 
-	
-	if(d === 1.0)
-		return true;
-		
-	return false;	
+	return true;
 }
 
 
 function testMatrixInverse() {
 	
-	var m = mw.m33();
-	m.setRotationX(Math.PI * 0.5);
-	
-	var m2 = mw.m33();
-	m2.setRotationX(-Math.PI * 0.5);
-	m2.inverse(); 
-	
-	print(m); print(m2);
-	
-	if(m2.equal(m))
+	var m = mw.m33().makeRotationX(Math.PI * 0.5);
+	var m2 = mw.m33().makeRotationX(-Math.PI * 0.5).inverse();
+	print(m);
+	print(m2);
+	if(m2.equal(m)) {
 		return true;
-		
+	}	
+	
 	return false;		
 }
 
 
 function testScalarMultiply() {
 	
-	var mtx1 = MW.m33().identity();
-	mtx1.scalarMultiply(2.0);
+	var mtx1 = MW.m33().identity().scalarMultiply(2.0);
+	var mtx2 = MW.m33().makeScale(2.0, 2.0, 2.0);
 	
-	var mtx2 = MW.m33().identity();
-	mtx2.setScale(2.0);
+	print(mtx1); print(mtx2);
 	
-	print(mtx1);
-	print(mtx2);
-	
-	if(mtx1.equal(mtx2))
+	if(mtx1.equal(mtx2)) {
 		return true;
-		
+	}
 	return false;
 }
 
 function testMultiply() { 
 	
 	var mtx1 = MW.m33().identity(); 
-	var mtx2 = mtx1.getCopy();
+	var mtx2 = MW.m33().copy(mtx1); 
 	mtx1.inverse(); 
 
-	var mtxX = MW.m33().identity(); 
-	mtxX.setRotationX(Math.PI * 0.5);
-	var mtxY = MW.m33().identity();
-	mtxY.setRotationY(Math.PI * 0.5);
-	var mtxZ = MW.m33().identity();
-	mtxZ.setRotationZ(Math.PI * 0.5);
+	var mtxX = MW.m33().makeRotationX(Math.PI * 0.5); 
+	var mtxY = MW.m33().makeRotationY(Math.PI * 0.5);
+	var mtxZ = MW.m33().makeRotationZ(Math.PI * 0.5);
 	
 	var mtxXYZ = MW.m33().identity(); 
 	mtxXYZ.fromEulerAnglesXYZ(Math.PI * 0.5, Math.PI * 0.5, Math.PI * 0.5);
@@ -266,7 +311,7 @@ function testMultiply() {
 
 	print(mtxXYZ);
 	
-	var mulMatrix = mtxX.getCopy(); 
+	var mulMatrix = MW.m33().copy(mtxX); 
 	mulMatrix.multiply(mtxY);
 	mulMatrix.multiply(mtxZ);
 			
@@ -288,21 +333,6 @@ function testEquality() {
 	return false;
 }
 
-function testTranspose() { 
-	
-	var mtxId = MW.m33().identity();
-	mtxId.m[1] = 1;
-	print(mtxId);
-	var mtx2 = mtxId.getTranspose();
-	print(mtx2);
-	
-	if(mtxId.equal(mtx2.getTranspose())) {
-		return true;
-	}
-	
-	return false;
-}
-
 function testAxisAngle() { 
 	
 	var mtxId = MW.m33().identity();
@@ -313,8 +343,7 @@ function testAxisAngle() {
 	v3.z = 0.0; 
 	mtxId.fromAngleAxis(Math.PI * 0.5, v3);
 	
- 	var mtxX = MW.m33().identity(); 
- 	mtxX.setRotationX(Math.PI * 0.5);
+ 	var mtxX = MW.m33().makeRotationX(Math.PI * 0.5); 
  	
  	print(mtxId);
  	print(mtxX);

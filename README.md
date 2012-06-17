@@ -60,6 +60,15 @@ var mtx22 = MW.m22().identity().scalarMultiply(x).inverse();
 ToDo
 =======
 
-* Complete matrices implementation
+* Include dot and cross product in the Vector objects
+* Complete Quaternion class implementation
+* Introduce "Complex" object type
+* Ray, Plane, and intersection functions
+* Have some fun with canvas tests :)
 * Include 2D geometry helpers
+* Add 3D Geometry (Plane, Sphere, Cube at least)
+* Add AABB and OOBB in 2D and 3D
+* Evaluate if we want to include FFT? DCT? 
+* Evaluate inclusion of integration + mean
+* Statistical functions?
 
