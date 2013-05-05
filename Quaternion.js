@@ -51,13 +51,13 @@ MW.Quaternion.prototype = {
 	}
 }
 
-MW.Quaternion.zero = function() {
-	var q = new MW.Quaternion();
-	q.w = 0.0;
-	return q; 
-}
-
-MW.Quaternion.identity = function() { 
-	var q = new MW.Quaternion(); 
-	return q;	
-}
+// MW.Quaternion.zero = function() {
+	// var q = new MW.Quaternion();
+	// q.w = 0.0;
+	// return q; 
+// }
+// 
+// MW.Quaternion.identity = function() { 
+	// var q = new MW.Quaternion(); 
+	// return q;	
+// }

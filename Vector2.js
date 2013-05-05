@@ -1,14 +1,22 @@
 /**
  * @author CrashTheuniversE
  */
-MW.Vector2 = function (x, y) {
+
+var vec2 = function(x, y) { 
 	this.x = x;
 	this.y = y;
-};
+}
 
-MW.Vector2.prototype = {
+var createVec2 = function(x, y) { 
+	return new vec2(x,y);	
+}
+
+MW.Vector2 = vec2;  
+MW.v2 = createVec2;
+
+vec2.prototype = {
     
-    constructor: MW.Vector2,
+    constructor: vec2,
     
 	getSquaredLength: function () {
 		return ( (this.x * this.x) + (this.y * this.y) ); 
